@@ -5,7 +5,8 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "11.4.0"
     kotlin("plugin.jpa") version "1.9.25"
-    kotlin("kapt") version "1.8.22"
+    // Align kapt plugin with Kotlin version to avoid incompatibilities
+    kotlin("kapt") version "1.9.25"
 }
 
 group = "com.fastcampus"
@@ -29,10 +30,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     // Springdoc OpenAPI starter compatible with Spring Boot 3.5.x (Spring Framework 6.x)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
-    implementation("com.querydsl-apt:5.0.0:jakarta")
+    // Querydsl for JPA (Jakarta namespace)
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
-    runtimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")
+    testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -59,4 +61,8 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<Jar>("jar") {
+    enabled = false
 }
