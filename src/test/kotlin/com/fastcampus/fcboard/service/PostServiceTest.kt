@@ -6,14 +6,17 @@ import com.fastcampus.fcboard.exception.PostNotFoundException
 import com.fastcampus.fcboard.exception.PostNotUpdatableException
 import com.fastcampus.fcboard.repository.PostRepository
 import com.fastcampus.fcboard.service.dto.PostCreateRequestDto
+import com.fastcampus.fcboard.service.dto.PostSearchRequestDto
 import com.fastcampus.fcboard.service.dto.PostUpdateRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 
 @SpringBootTest
@@ -22,6 +25,23 @@ class PostServiceTest(
     @Autowired private val postRepository: PostRepository,
     repository: PostRepository,
 ) : BehaviorSpec({
+    beforeSpec {
+        postRepository.saveAll(
+            listOf(
+                Post("title1", "content1", "ben1"),
+                Post("title12", "content1", "ben1"),
+                Post("title13", "content1", "ben1"),
+                Post("title14", "content1", "ben1"),
+                Post("title15", "content1", "ben1"),
+                Post("title6", "content1", "ben2"),
+                Post("title7", "content1", "ben2"),
+                Post("title8", "content1", "ben2"),
+                Post("title9", "content1", "ben2"),
+                Post("title0", "content1", "ben2")
+            )
+        )
+    }
+
     given("게시글 생성 시") {
         When("게시글 인풋이 정상적으로 들어오면") {
             val postId = postService.createPost(
@@ -113,6 +133,57 @@ class PostServiceTest(
                 shouldThrow<PostNotDeletableException> {
                     postService.deletePost(saved2.id, "ben2")
                 }
+            }
+        }
+    }
+    given("게시글 상세 조회시 ") {
+        val saved = postRepository.save(Post("title", "content", "ben"))
+        When("정상 조회시") {
+            val post = postService.getPost(saved.id)
+            then("게시글의 내용이 정상적으로 반환됨을 확인한다.") {
+                post.id shouldBe saved.id
+                post.title shouldBe "title"
+                post.content shouldBe "content"
+                post.createdBy shouldBe "ben"
+            }
+        }
+        When("게시글이 없을 때") {
+            then("게시글을 찾을 수 없다라는 예외가 발생한다.") {
+                shouldThrow<PostNotFoundException> {
+                    postService.getPost(9999L)
+                }
+            }
+        }
+    }
+    given("게시글 목록 조회시") {
+        When("정상 조회시") {
+            val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto())
+            then("게시글 페이지가 반환된다.") {
+                postPage.number shouldBe 0
+                postPage.size shouldBe 5
+                postPage.content.size shouldBe 5
+                postPage.content[0].title shouldContain "title"
+                postPage.content[0].createdBy shouldContain "ben"
+            }
+        }
+        When("타이틀로 검색") {
+            val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto(title = "title1"))
+            then("타이틀에 해당하는 게시글이 반환된다.") {
+                postPage.number shouldBe 0
+                postPage.size shouldBe 5
+                postPage.content.size shouldBe 5
+                postPage.content[0].title shouldContain "title1"
+                postPage.content[0].createdBy shouldContain "ben1"
+            }
+        }
+        When("작성자로 검색") {
+            val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto(createdBy = "ben1"))
+            then("작성자에 해당하는 게시글이 반환된다.") {
+                postPage.number shouldBe 0
+                postPage.size shouldBe 5
+                postPage.content.size shouldBe 5
+                postPage.content[0].title shouldContain "title1"
+                postPage.content[0].createdBy shouldBe "ben1"
             }
         }
     }

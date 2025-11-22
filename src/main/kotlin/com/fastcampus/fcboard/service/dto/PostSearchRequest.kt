@@ -1,6 +1,5 @@
-package com.fastcampus.fcboard.controller.dto
+package com.fastcampus.fcboard.service.dto
 
-import com.fastcampus.fcboard.service.dto.PostSearchRequestDto
 import org.springframework.web.bind.annotation.RequestParam
 
 data class PostSearchRequest(
