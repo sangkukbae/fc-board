@@ -61,7 +61,6 @@ class PostController(
         pageable: Pageable,
         postSearchRequest: PostSearchRequest,
     ): Page<PostSummaryResponse> {
-        val pageRequest = PageRequest.of(pageable.pageNumber, pageable.pageSize)
-        return postService.findPageBy(pageRequest, postSearchRequest.toDto()).toResponse()
+        return postService.findPageBy(pageable, postSearchRequest.toDto()).toResponse()
     }
 }

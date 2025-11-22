@@ -13,6 +13,7 @@ import com.fastcampus.fcboard.service.dto.toEntity
 import com.fastcampus.fcboard.service.dto.toSummaryResponseDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -46,7 +47,7 @@ class PostService(
         return postRepository.findByIdOrNull(id)?.toDetailResponseDto() ?: throw PostNotFoundException()
     }
 
-    fun findPageBy(pageRequest: PageRequest, postSearchRequestDto: PostSearchRequestDto): Page<PostSummaryResponseDto> {
+    fun findPageBy(pageRequest: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<PostSummaryResponseDto> {
         return postRepository.findPageBy(pageRequest, postSearchRequestDto).toSummaryResponseDto()
     }
 }
