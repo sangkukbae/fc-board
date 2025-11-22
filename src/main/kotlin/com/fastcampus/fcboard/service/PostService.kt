@@ -1,11 +1,11 @@
 package com.fastcampus.fcboard.service
 
 import com.fastcampus.fcboard.exception.PostNotDeletableException
+import com.fastcampus.fcboard.exception.PostNotFoundException
 import com.fastcampus.fcboard.repository.PostRepository
 import com.fastcampus.fcboard.service.dto.PostCreateRequestDto
 import com.fastcampus.fcboard.service.dto.PostUpdateRequestDto
 import com.fastcampus.fcboard.service.dto.toEntity
-import com.fastcampus.fcboard.exception.PostNotFoundException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,7 +18,6 @@ class PostService(
     @Transactional
     fun createPost(requestDto: PostCreateRequestDto): Long {
         return postRepository.save(requestDto.toEntity()).id
-
     }
 
     @Transactional

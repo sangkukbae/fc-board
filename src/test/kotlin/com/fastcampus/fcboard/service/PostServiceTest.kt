@@ -20,8 +20,8 @@ import org.springframework.data.repository.findByIdOrNull
 class PostServiceTest(
     private val postService: PostService,
     @Autowired private val postRepository: PostRepository,
-    repository: PostRepository
-): BehaviorSpec({
+    repository: PostRepository,
+) : BehaviorSpec({
     given("게시글 생성 시") {
         When("게시글 인풋이 정상적으로 들어오면") {
             val postId = postService.createPost(
@@ -46,12 +46,13 @@ class PostServiceTest(
             Post(
                 title = "title",
                 content = "content",
-                createdBy = "ben",
+                createdBy = "ben"
             )
         )
         When("정상 수정시") {
             val updatedId = postService.updatePost(
-                saved.id, PostUpdateRequestDto(
+                saved.id,
+                PostUpdateRequestDto(
                     title = "updated_title",
                     content = "updated_content",
                     updatedBy = "ben"
@@ -69,11 +70,14 @@ class PostServiceTest(
         When("게시글이 없을 때") {
             then("게시글을 찾을 수 없다라는 예외가 발생한다.") {
                 shouldThrow<PostNotFoundException> {
-                    postService.updatePost(-1L, PostUpdateRequestDto(
-                        title = "updated_title",
-                        content = "updated_content",
-                        updatedBy = "updated_ben"
-                    ))
+                    postService.updatePost(
+                        -1L,
+                        PostUpdateRequestDto(
+                            title = "updated_title",
+                            content = "updated_content",
+                            updatedBy = "updated_ben"
+                        )
+                    )
                 }
             }
         }
@@ -82,11 +86,14 @@ class PostServiceTest(
 
             then("수정할 수 없는 게시물 입니다 예외가 발생한다.") {
                 shouldThrow<PostNotUpdatableException> {
-                    postService.updatePost(1L, PostUpdateRequestDto(
-                        title = "updated_title",
-                        content = "updated_content",
-                        updatedBy = "updated_ben"
-                    ))
+                    postService.updatePost(
+                        1L,
+                        PostUpdateRequestDto(
+                            title = "updated_title",
+                            content = "updated_content",
+                            updatedBy = "updated_ben"
+                        )
+                    )
                 }
             }
         }
@@ -106,7 +113,6 @@ class PostServiceTest(
                 shouldThrow<PostNotDeletableException> {
                     postService.deletePost(saved2.id, "ben2")
                 }
-
             }
         }
     }
