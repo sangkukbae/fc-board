@@ -12,7 +12,6 @@ import com.fastcampus.fcboard.service.dto.toDetailResponseDto
 import com.fastcampus.fcboard.service.dto.toEntity
 import com.fastcampus.fcboard.service.dto.toSummaryResponseDto
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

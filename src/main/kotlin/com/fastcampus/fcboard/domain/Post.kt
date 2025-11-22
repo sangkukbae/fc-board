@@ -26,7 +26,7 @@ class Post(
 
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
     var comments: MutableList<Comment> = mutableListOf()
-    protected set
+        protected set
 
     fun update(postUpdateRequestDto: PostUpdateRequestDto) {
         if (postUpdateRequestDto.updatedBy != this.createdBy) {

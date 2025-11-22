@@ -17,7 +17,7 @@ class CommentController {
     fun createComment(
         @PathVariable postId: Long,
         @RequestBody commentCreateRequest: CommentCreateRequest,
-    ) : Long {
+    ): Long {
         println(commentCreateRequest.content)
         println(commentCreateRequest.createdBy)
         return 1L
@@ -27,7 +27,7 @@ class CommentController {
     fun updateComment(
         @PathVariable commentId: Long,
         @RequestBody commentUpdateRequest: CommentUpdateRequest,
-        ) : Long {
+    ): Long {
         println(commentUpdateRequest.content)
         println(commentUpdateRequest.updatedBy)
         return commentId
@@ -37,9 +37,8 @@ class CommentController {
     fun deleteComment(
         @PathVariable commentId: Long,
         @RequestParam deletedBy: String,
-        ) : Long {
+    ): Long {
         println(deletedBy)
         return commentId
     }
-
 }

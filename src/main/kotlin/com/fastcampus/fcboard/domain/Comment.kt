@@ -12,13 +12,13 @@ class Comment(
     content: String,
     post: Post,
     createdBy: String,
-): BaseEntity(createdBy = createdBy) {
+) : BaseEntity(createdBy = createdBy) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
     var content: String? = content
-    protected set
+        protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
     var post: Post = post
