@@ -2,6 +2,8 @@ package com.fastcampus.fcboard.controller
 
 import com.fastcampus.fcboard.controller.dto.CommentCreateRequest
 import com.fastcampus.fcboard.controller.dto.CommentUpdateRequest
+import com.fastcampus.fcboard.controller.dto.toDto
+import com.fastcampus.fcboard.service.CommentService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class CommentController {
+class CommentController(
+    private val commentService: CommentService,
+) {
 
     @PostMapping("/posts/{postId}/comments")
     fun createComment(
@@ -20,7 +24,7 @@ class CommentController {
     ): Long {
         println(commentCreateRequest.content)
         println(commentCreateRequest.createdBy)
-        return 1L
+        return commentService.createComment(postId, commentCreateRequest.toDto())
     }
 
     @PutMapping("comments/{commentId}")
@@ -28,9 +32,7 @@ class CommentController {
         @PathVariable commentId: Long,
         @RequestBody commentUpdateRequest: CommentUpdateRequest,
     ): Long {
-        println(commentUpdateRequest.content)
-        println(commentUpdateRequest.updatedBy)
-        return commentId
+        return commentService.updateComment(commentId, commentUpdateRequest.toDto())
     }
 
     @DeleteMapping("/comments/{commentId}")
@@ -38,7 +40,6 @@ class CommentController {
         @PathVariable commentId: Long,
         @RequestParam deletedBy: String,
     ): Long {
-        println(deletedBy)
-        return commentId
+        return commentService.deleteComment(commentId, deletedBy)
     }
 }
