@@ -2,6 +2,7 @@ package com.fastcampus.fcboard.service
 
 import com.fastcampus.fcboard.domain.Comment
 import com.fastcampus.fcboard.domain.Post
+import com.fastcampus.fcboard.domain.Tag
 import com.fastcampus.fcboard.exception.PostNotDeletableException
 import com.fastcampus.fcboard.exception.PostNotFoundException
 import com.fastcampus.fcboard.exception.PostNotUpdatableException
@@ -32,16 +33,16 @@ class PostServiceTest(
     beforeSpec {
         postRepository.saveAll(
             listOf(
-                Post("title1", "content1", "ben1"),
-                Post("title12", "content1", "ben1"),
-                Post("title13", "content1", "ben1"),
-                Post("title14", "content1", "ben1"),
-                Post("title15", "content1", "ben1"),
-                Post("title6", "content1", "ben2"),
-                Post("title7", "content1", "ben2"),
-                Post("title8", "content1", "ben2"),
-                Post("title9", "content1", "ben2"),
-                Post("title0", "content1", "ben2")
+                Post("title1", "content1", "ben1", tags = listOf("tag1", "tag2")),
+                Post("title12", "content1", "ben1", tags = listOf("tag1", "tag2")),
+                Post("title13", "content1", "ben1", tags = listOf("tag1", "tag2")),
+                Post("title14", "content1", "ben1", tags = listOf("tag1", "tag2")),
+                Post("title15", "content1", "ben1", tags = listOf("tag1", "tag2")),
+                Post("title6", "content1", "ben2", tags = listOf("tag1", "tag5")),
+                Post("title7", "content1", "ben2", tags = listOf("tag1", "tag5")),
+                Post("title8", "content1", "ben2", tags = listOf("tag1", "tag5")),
+                Post("title9", "content1", "ben2", tags = listOf("tag1", "tag5")),
+                Post("title0", "content1", "ben2", tags = listOf("tag1", "tag5"))
             )
         )
     }
@@ -124,7 +125,6 @@ class PostServiceTest(
         }
 
         When("작성자가 동일하지 않으면") {
-
             then("수정할 수 없는 게시물 입니다 예외가 발생한다.") {
                 shouldThrow<PostNotUpdatableException> {
                     postService.updatePost(
@@ -187,8 +187,15 @@ class PostServiceTest(
             }
         }
     }
-    given("게시글 상세 조회시 ") {
+    given("게시글 상세 조회시") {
         val saved = postRepository.save(Post("title", "content", "ben"))
+        tagRepository.saveAll(
+            listOf(
+                Tag("tag1", saved, "ben"),
+                Tag("tag2", saved, "ben"),
+                Tag("tag3", saved, "ben")
+            )
+        )
         When("정상 조회시") {
             val post = postService.getPost(saved.id)
             then("게시글의 내용이 정상적으로 반환됨을 확인한다.") {
@@ -196,6 +203,12 @@ class PostServiceTest(
                 post.title shouldBe "title"
                 post.content shouldBe "content"
                 post.createdBy shouldBe "ben"
+            }
+            then("태그가 정상적으로 조회됨을 확인한다.") {
+                post.tags.size shouldBe 3
+                post.tags[0] shouldBe "tag1"
+                post.tags[1] shouldBe "tag2"
+                post.tags[2] shouldBe "tag3"
             }
         }
         When("게시글이 없을 때") {
@@ -268,6 +281,24 @@ class PostServiceTest(
                 postPage.content.size shouldBe 5
                 postPage.content[0].title shouldContain "title1"
                 postPage.content[0].createdBy shouldBe "ben1"
+            }
+            then("첫번째 태크가 함꼐 조회됨을 확인한다.") {
+                postPage.content.forEach {
+                    it.firstTag shouldBe "tag1"
+                }
+            }
+        }
+        When("태그로 검색") {
+            val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto(tag = "tag5"))
+            then("태그에 해당하는 게시글이 변환된다.") {
+                postPage.number shouldBe 0
+                postPage.size shouldBe 5
+                postPage.content.size shouldBe 5
+                postPage.content[0].title shouldContain "title0"
+                postPage.content[1].title shouldContain "title9"
+                postPage.content[2].title shouldContain "title8"
+                postPage.content[3].title shouldContain "title7"
+                postPage.content[4].title shouldContain "title6"
             }
         }
     }

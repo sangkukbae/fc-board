@@ -16,12 +16,12 @@ interface CustomPostRepository {
 }
 
 class CustomPostRepositoryImpl : CustomPostRepository, QuerydslRepositorySupport(Post::class.java) {
-
     override fun findPageBy(pageRequest: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<Post> {
         val result = from(post)
             .where(
                 postSearchRequestDto.title?.let { post.title.contains(it) },
-                postSearchRequestDto.createdBy?.let { post.createdBy.eq(it) }
+                postSearchRequestDto.createdBy?.let { post.createdBy.eq(it) },
+                postSearchRequestDto.tag?.let { post.tags.any().name.eq(it) }
             )
             .orderBy(post.createdAt.desc())
             .offset(pageRequest.offset)
