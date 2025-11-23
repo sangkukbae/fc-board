@@ -14,6 +14,7 @@ import com.fastcampus.fcboard.service.dto.PostSearchRequestDto
 import com.fastcampus.fcboard.service.dto.PostUpdateRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.extensions.testcontainers.perSpec
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -21,6 +22,7 @@ import io.kotest.matchers.string.shouldContain
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import org.testcontainers.containers.GenericContainer
 
 @SpringBootTest
 class PostServiceTest(
@@ -31,7 +33,14 @@ class PostServiceTest(
     private val likeService: LikeService,
     service: PostService,
 ) : BehaviorSpec({
+    val redisContainer = GenericContainer<Nothing>("redis:6.2.6-alpine")
+    afterSpec {
+        redisContainer.stop()
+    }
     beforeSpec {
+        redisContainer.portBindings.add("16379:6379")
+        redisContainer.start()
+        listener(redisContainer.perSpec())
         postRepository.saveAll(
             listOf(
                 Post("title1", "content1", "ben1", tags = listOf("tag1", "tag2")),
