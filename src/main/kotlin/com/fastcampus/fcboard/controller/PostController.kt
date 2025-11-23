@@ -28,6 +28,7 @@ class PostController(
     fun createPost(
         @RequestBody postCreateRequest: PostCreateRequest,
     ): Long {
+        println(postCreateRequest.tags)
         return postService.createPost(postCreateRequest.toDto())
     }
 
@@ -60,6 +61,7 @@ class PostController(
         pageable: Pageable,
         postSearchRequest: PostSearchRequest,
     ): Page<PostSummaryResponse> {
+        println(postSearchRequest.tag)
         return postService.findPageBy(pageable, postSearchRequest.toDto()).toResponse()
     }
 }
